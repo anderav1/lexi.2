@@ -45,6 +45,15 @@ int main(int argc, char* argv[]) {
 
 }
 
+void docommand(char* cline) {
+	// fork a child (grandchild of the og) that calls makeargv on cline
+	// and calls execvp on the resulting arg array
+
+	// wait for this child, then return the license to the license obj
+
+	// exit
+}
+
 //
 // bakery algorithm
 bool choosing[n]; // shm
