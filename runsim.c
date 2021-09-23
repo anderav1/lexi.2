@@ -43,3 +43,28 @@ int main(int argc, char* argv[]) {
 	// each child process runs execl testsim
 
 }
+
+//
+// bakery algorithm
+bool choosing[n]; // shm
+int number[n];  // shm, contains turn numbers
+
+void process_i(const int i) {
+	do {
+		choosing[i] = true;
+		number[i] = 1 + max(number);
+		choosing[i] = false;
+
+		for (int j = 0; j < n; j++) {
+			while (choosing[j]);
+			while ((number[j]) && (number[j], j) < (number[i], i));
+		}
+
+		critical_section();
+
+		number[i] = 0;
+
+		remainder_section();
+	} while (1);
+}
+
