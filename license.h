@@ -1,6 +1,8 @@
 #ifndef LICENSE_H
 #define LICENSE_H
 
+class license {
+
 
 int getlicense(void);	// blocks until a license is available
 int returnlicense(void);  // increments the number of available licenses
