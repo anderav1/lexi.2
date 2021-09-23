@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <sys/shm.h>
+#include "license.h"
 
 int main(int argc, char* argv[]) {
 	// read in command line args
