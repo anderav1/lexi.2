@@ -5,6 +5,10 @@
 // runsim is invoked with the command:  runsim n < testing.data
 	// n -- number of licenses
 
+
+#include <stdio.h>
+#include <sys/shm.h>
+
 int main(int argc, char* argv[]) {
 	// read in command line args
 	// validate args; output usage msg if invalid arg
