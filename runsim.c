@@ -11,6 +11,36 @@
 #include "license.h"
 
 int main(int argc, char* argv[]) {
+	int shmid;
+	key_t key = 1996;  // name of shared memory segment
+	char* shm;  // ptr to shared memory segment
+	size_t shmsz;  // size of shared memory segment
+
+	shmsz = sizeof(int);
+
+	// create shared memory segment
+	if ((shmid = shmget(key, shmsz, IPC_CREAT)) == -1) {
+		perror("shmget: Failed to retrieve shared memory segment");
+		exit(1);
+	}
+
+	// attach shmem seg to program's space
+	if ((shm = shmat(shmid, NULL, 0)) == (char*)(-1)) {
+		perror("shmat: Failed to attach shared memory segment");
+		exit(1);
+	}
+
+	/* operate on the shared mem */
+
+	int narg;
+
+	if (argc != 2) {
+		perror("argc: invalid argument count");
+		exit(1);
+	}
+	narg = atoi(argv[1]);
+	// set license obj ptr to point to narg
+
 	// read in command line args
 	// validate args; output usage msg if invalid arg
 
@@ -43,6 +73,13 @@ int main(int argc, char* argv[]) {
 
 	// each child process runs execl testsim
 
+
+
+	// detach shmem seg from program space
+	if ((shmdt(shm)) == -1) {
+		perror("shmdt: Failed to detach shared memory segment");
+		exit(1);
+	}
 }
 
 void docommand(char* cline) {
