@@ -1,4 +1,5 @@
 // config.h
+#define NUMPROC 20 // max num of procs to be forked
 
 #ifndef CONFIG_H
 #define CONFIG_H
