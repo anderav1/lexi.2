@@ -5,6 +5,8 @@
 #define CONFIG_H
 
 class license {
+	// should define shared memory var here???
+	// copy code from runsim to here
 
 	int getlicense(void);	// blocks until a license is available
 	int returnlicense(void);  // increments the number of available licenses
