@@ -1,6 +1,6 @@
 // Author: Lexi Anderson
 // CS 4760
-// Last modified: September 29, 2021
+// Last modified: Sept 29, 2021
 // runsim.c -- main program executable
 
 // runsim is invoked with the command:  runsim n < testing.data
@@ -34,6 +34,7 @@ int main(int argc, char* argv[]) {
 	// attach shmem seg to program's space
 	if ((shm = shmat(shmid, NULL, 0)) == (char*)(-1)) {
 		perror("runsim: Error: shmat");
+		deallocshm(shmid);
 		exit(1);
 	}
 
@@ -79,12 +80,7 @@ int main(int argc, char* argv[]) {
 
 	// each child process runs execl testsim
 
-
-	/* deallocate memory */
-	if ((shmctl(shmid, IPC_RMID, NULL)) == -1) {
-		perror("runsim: Error: shmctl");
-		exit(1);
-	}
+	deallocshm(shmid);
 
 	/* detach shared mem seg from program space */
 	if ((shmdt(shm)) == -1) {
@@ -126,3 +122,10 @@ void process_i(const int i) {
 	} while (1);
 }*/
 
+// deallocate shared memory
+void deallocshm(int shmid) {
+	if ((shmctl(shmid, IPC_RMID, NULL)) == -1) {
+		perror("runsim: Error: shmctl");
+		exit(1);
+	}
+}
