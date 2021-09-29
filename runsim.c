@@ -8,9 +8,16 @@
 
 #include <stdio.h>
 #include <sys/shm.h>
+#include "config.h"
 #include "license.h"
 
+#define MAX_CANON 20
+
+extern struct License* license;
+extern int* nlicenses;
+
 int main(int argc, char* argv[]) {
+	/* allocate shared memory */
 	int shmid;
 	key_t key = 1996;  // name of shared memory segment
 	char* shm;  // ptr to shared memory segment
@@ -20,13 +27,13 @@ int main(int argc, char* argv[]) {
 
 	// create shared memory segment
 	if ((shmid = shmget(key, shmsz, IPC_CREAT)) == -1) {
-		perror("runsim: shmget: Failed to retrieve shared memory segment");
+		perror("runsim: Error: shmget");
 		exit(1);
 	}
 
 	// attach shmem seg to program's space
 	if ((shm = shmat(shmid, NULL, 0)) == (char*)(-1)) {
-		perror("runsim: shmat: Failed to attach shared memory segment");
+		perror("runsim: Error: shmat");
 		exit(1);
 	}
 
@@ -35,7 +42,7 @@ int main(int argc, char* argv[]) {
 	int narg;
 
 	if (argc != 2) {
-		perror("runsim: argc: invalid argument count");
+		perror("runsim: Error: argc");
 		exit(1);
 	}
 	narg = atoi(argv[1]);
@@ -77,7 +84,7 @@ int main(int argc, char* argv[]) {
 
 	// detach shmem seg from program space
 	if ((shmdt(shm)) == -1) {
-		perror("runsim: shmdt: Failed to detach shared memory segment");
+		perror("runsim: Error: shmdt");
 		exit(1);
 	}
 }
