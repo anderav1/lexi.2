@@ -1,5 +1,6 @@
 // Author: Lexi Anderson
-// Last modified: September 23, 2021
+// CS 4760
+// Last modified: September 29, 2021
 // runsim.c -- main program executable
 
 // runsim is invoked with the command:  runsim n < testing.data
@@ -13,8 +14,7 @@
 
 #define MAX_CANON 20
 
-//extern struct License* license;
-//extern int* nlicenses;
+extern int nlicenses;
 
 int main(int argc, char* argv[]) {
 	/* allocate shared memory */
@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
 
 
 	/* deallocate memory */
-	if ((shmctl(shmid, IPC_RMID, NULL) == -1) {
+	if ((shmctl(shmid, IPC_RMID, NULL)) == -1) {
 		perror("runsim: Error: shmctl");
 		exit(1);
 	}

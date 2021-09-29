@@ -6,14 +6,11 @@ OBJ = runsim.o testsim.o license.o
 
 all: runsim testsim
 
-#runsim: runsim.o $(DEPS)
-#	$(CC) $(CFLAGS) -o $@ $^
-
 #testsim: testsim.o $(DEPS)
 #	$(CC) $(CFLAGS) -o $@ $^
 
 # generate main program executables
-$(TAR): %: %.o $(DEPS)
+$(TAR): %: %.o license.o
 	$(CC) $(CFLAGS) -o $@ $^
 
 # generate object files from c files
