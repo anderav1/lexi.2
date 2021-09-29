@@ -13,20 +13,21 @@
 #include "config.h"
 
 #define MAX_CANON 20
+#define SHMKEY 101107 // shared memory segment key
+#define SHMSZ sizeof(int)  // size of shared memory segment
 
 extern int nlicenses;
 
 int main(int argc, char* argv[]) {
 	/* allocate shared memory */
 	int shmid;
-	key_t key = 1996;  // name of shared memory segment
 	char* shm;  // ptr to shared memory segment
-	size_t shmsz;  // size of shared memory segment
+//	size_t shmsz;  // size of shared memory segment
 
-	shmsz = sizeof(int);
+//	shmsz = sizeof(int);
 
 	// create shared memory segment
-	if ((shmid = shmget(key, shmsz, IPC_CREAT)) == -1) {
+	if ((shmid = shmget(SHMKEY, SHMSZ, 0777 | IPC_CREAT)) == -1) {
 		perror("runsim: Error: shmget");
 		exit(1);
 	}
@@ -83,7 +84,7 @@ int main(int argc, char* argv[]) {
 	deallocshm(shmid);
 
 	/* detach shared mem seg from program space */
-	if ((shmdt(shm)) == -1) {
+	if (shmdt(shm) == -1) {
 		perror("runsim: Error: shmdt");
 		exit(1);
 	}
@@ -124,7 +125,7 @@ void process_i(const int i) {
 
 // deallocate shared memory
 void deallocshm(int shmid) {
-	if ((shmctl(shmid, IPC_RMID, NULL)) == -1) {
+	if (shmctl(shmid, IPC_RMID, NULL) == -1) {
 		perror("runsim: Error: shmctl");
 		exit(1);
 	}
