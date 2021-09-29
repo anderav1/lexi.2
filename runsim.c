@@ -20,13 +20,13 @@ int main(int argc, char* argv[]) {
 
 	// create shared memory segment
 	if ((shmid = shmget(key, shmsz, IPC_CREAT)) == -1) {
-		perror("shmget: Failed to retrieve shared memory segment");
+		perror("runsim: shmget: Failed to retrieve shared memory segment");
 		exit(1);
 	}
 
 	// attach shmem seg to program's space
 	if ((shm = shmat(shmid, NULL, 0)) == (char*)(-1)) {
-		perror("shmat: Failed to attach shared memory segment");
+		perror("runsim: shmat: Failed to attach shared memory segment");
 		exit(1);
 	}
 
@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
 	int narg;
 
 	if (argc != 2) {
-		perror("argc: invalid argument count");
+		perror("runsim: argc: invalid argument count");
 		exit(1);
 	}
 	narg = atoi(argv[1]);
@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
 
 	// detach shmem seg from program space
 	if ((shmdt(shm)) == -1) {
-		perror("shmdt: Failed to detach shared memory segment");
+		perror("runsim: shmdt: Failed to detach shared memory segment");
 		exit(1);
 	}
 }
