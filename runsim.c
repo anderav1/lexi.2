@@ -22,9 +22,6 @@ int main(int argc, char* argv[]) {
 	/* allocate shared memory */
 	int shmid;
 	char* shm;  // ptr to shared memory segment
-//	size_t shmsz;  // size of shared memory segment
-
-//	shmsz = sizeof(int);
 
 	// create shared memory segment
 	if ((shmid = shmget(SHMKEY, SHMSZ, 0777 | IPC_CREAT)) == -1) {
@@ -38,6 +35,7 @@ int main(int argc, char* argv[]) {
 		deallocshm(shmid);
 		exit(1);
 	}
+/*TEST*/puts("Shared memory attached successfully");
 
 
 	/* operate on the shared mem */
