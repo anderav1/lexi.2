@@ -1,20 +1,20 @@
 // Author: Lexi Anderson
 // Last modified: September 23, 2021
-// Runsim.c
+// runsim.c -- main program executable
 
 // runsim is invoked with the command:  runsim n < testing.data
 	// n -- number of licenses
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/shm.h>
 #include "config.h"
-#include "license.h"
 
 #define MAX_CANON 20
 
-extern struct License* license;
-extern int* nlicenses;
+//extern struct License* license;
+//extern int* nlicenses;
 
 int main(int argc, char* argv[]) {
 	/* allocate shared memory */
@@ -37,10 +37,9 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
+
 	/* operate on the shared mem */
-
 	int narg;
-
 	if (argc != 2) {
 		perror("runsim: Error: argc");
 		exit(1);
@@ -81,8 +80,13 @@ int main(int argc, char* argv[]) {
 	// each child process runs execl testsim
 
 
+	/* deallocate memory */
+	if ((shmctl(shmid, IPC_RMID, NULL) == -1) {
+		perror("runsim: Error: shmctl");
+		exit(1);
+	}
 
-	// detach shmem seg from program space
+	/* detach shared mem seg from program space */
 	if ((shmdt(shm)) == -1) {
 		perror("runsim: Error: shmdt");
 		exit(1);
@@ -100,7 +104,7 @@ void docommand(char* cline) {
 
 //
 // bakery algorithm
-bool choosing[n]; // shm
+/* bool choosing[n]; // shm
 int number[n];  // shm, contains turn numbers
 
 void process_i(const int i) {
@@ -120,5 +124,5 @@ void process_i(const int i) {
 
 		remainder_section();
 	} while (1);
-}
+}*/
 
