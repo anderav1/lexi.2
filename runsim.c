@@ -1,6 +1,6 @@
 // Author: Lexi Anderson
 // CS 4760
-// Last modified: Sept 29, 2021
+// Last modified: Sept 30, 2021
 // runsim.c -- main program executable
 
 // runsim is invoked with the command:  runsim n < testing.data
@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/shm.h>
+#include <unistd.h>
 #include "config.h"
 
 #define MAX_CANON 20
@@ -30,9 +31,18 @@ void deallocshm(int shmid) {
 /* main function */
 
 int main(int argc, char* argv[]) {
+	// set nlicenses
+	if (argc != 2) {
+		perror("runsim: Error: argc");
+		exit(1);
+	}
+	int narg = atoi(argv[1]);
+	nlicenses = narg;
+
+
 	/* allocate shared memory */
 	int shmid;
-	char* shm;  // ptr to shared memory segment
+	int* shm;  // ptr to shared memory segment
 
 	// create shared memory segment
 	if ((shmid = shmget(SHMKEY, SHMSZ, 0777 | IPC_CREAT)) == -1) {
@@ -41,31 +51,21 @@ int main(int argc, char* argv[]) {
 	}
 
 	// attach shmem seg to program's space
-	if ((shm = shmat(shmid, NULL, 0)) == (char*)(-1)) {
+	if ((shm = shmat(shmid, NULL, 0)) == (int*)(-1)) {
 		perror("runsim: Error: shmat");
 		deallocshm(shmid);
 		exit(1);
 	}
+
 /*TEST*/puts("Shared memory attached successfully");
 
+	*shm = nlicenses;
+	printf("The value of nlicenses stored in shared mem is %d\n", *shm);
 
 	/* operate on the shared mem */
-	int narg;
-	if (argc != 2) {
-		perror("runsim: Error: argc");
-		exit(1);
-	}
-	narg = atoi(argv[1]);
-	// set license obj ptr to point to narg
 
 	// read in command line args
 	// validate args; output usage msg if invalid arg
-
-	// set up shared memory
-		// see commands shmget, shmctl, shmat, shmdt
-	// set up func to deallocate shared memory
-		// use command ipcs to ensure that shared mem is allocated
-		// and deallocated correctly
 
 	// run loop until we reach eof in stdin
 		// use fgets to read a string from stdin

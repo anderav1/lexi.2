@@ -1,5 +1,6 @@
 // Author: Lexi Anderson
 // CS 4760
+// Last modified: Sept 29, 2021
 // license.c
 
 #include <stdlib.h>
