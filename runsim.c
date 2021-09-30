@@ -18,6 +18,17 @@
 
 extern int nlicenses;
 
+// deallocate shared memory
+void deallocshm(int shmid) {
+	if (shmctl(shmid, IPC_RMID, NULL) == -1) {
+		perror("runsim: Error: shmctl");
+		exit(1);
+	}
+}
+
+
+/* main function */
+
 int main(int argc, char* argv[]) {
 	/* allocate shared memory */
 	int shmid;
@@ -121,10 +132,3 @@ void process_i(const int i) {
 	} while (1);
 }*/
 
-// deallocate shared memory
-void deallocshm(int shmid) {
-	if (shmctl(shmid, IPC_RMID, NULL) == -1) {
-		perror("runsim: Error: shmctl");
-		exit(1);
-	}
-}
