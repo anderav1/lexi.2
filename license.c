@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/file.h>
 #include "config.h"
 
 int nlicenses = 0; // number of available licenses
@@ -58,11 +59,22 @@ void removelicenses(int n) {
 // Writes the specified message to the log file
 // Log file treated as critical resource
 void logmsg(const char* msg) {
+	char* filename = "logfile";
 	// check if file is available
 
 	// open file
-
+	FILE* fp;
+	fp = fopen(filename, "a");
+	if (fp == NULL) {
+		return;
+	}
+	while (flock(fileno(fp), LOCK_EX) == -1); // wait for file to be available
+	puts("Logfile now available");
 	// append msg to file
+	fprintf(fp, "%s", msg);
 
-	// close file
+	if(flock(fileno(fp), LOCK_UN) == 0) {
+/*TEST*/	puts("Logfile unlocked");
+	}
+	fclose(fp);
 }
