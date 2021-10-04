@@ -48,7 +48,6 @@ int main(int argc, char* argv[]) {
 	}
 	nlicenses = narg;
 
-
 	/* allocate shared memory */
 	int shmid;
 	int* shm;  // ptr to shared memory segment
@@ -66,10 +65,10 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
-/*TEST*/puts("Shared memory attached successfully");
+/*TEST*/puts("runsim: Shared memory attached successfully");
 
 	*shm = nlicenses;
-/*TEST*/printf("The value of nlicenses stored in shared mem is %d\n", *shm);
+/*TEST*/printf("runsim: The value of nlicenses stored in shared mem is %d\n", *shm);
 
 	/* main loop */
 
@@ -91,9 +90,11 @@ int main(int argc, char* argv[]) {
 				perror("runsim: Error: fork");
 				exit(1);
 			case 0:  // child
+				puts("runsim: child process executing\n");
 				docommand(inputBuffer);
 				break;
 			default:  // parent
+				puts("runsim: parent process running\n");
 				// check if any children have finished execution
 				w = waitpid(pid, &status, WNOHANG);
 				if (w == -1) {  // error
@@ -108,6 +109,7 @@ int main(int argc, char* argv[]) {
 
 	// at EOF, wait for all children to finish
 	while (*shm < narg) wait(&status);
+	puts("runsim: All children have finished execution\n");
 	return(0);
 
 	// implement signal handling to terminate after a specified num of secs
