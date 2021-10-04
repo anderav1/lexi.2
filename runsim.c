@@ -1,6 +1,6 @@
 // Author: Lexi Anderson
 // CS 4760
-// Last modified: Sept 30, 2021
+// Last modified: Oct 4, 2021
 // runsim.c -- main program executable
 
 // runsim is invoked with the command:  runsim n < testing.data
@@ -37,6 +37,10 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 	int narg = atoi(argv[1]);
+	if (initlicense() != 0) {
+		perror("runsim: Error: initlicense");
+		exit(1);
+	}
 	nlicenses = narg;
 
 
@@ -75,7 +79,6 @@ int main(int argc, char* argv[]) {
 
 		// fork child process that calls docommand
 		pid_t pid, w;
-		int status;
 		switch (pid) {
 			case -1:  // error
 				perror("runsim: Error: fork");
@@ -94,23 +97,12 @@ int main(int argc, char* argv[]) {
 				}
 				break;
 		}
-
-		// at end, wait for all children to finish
-		if (nlicenses < narg) {
-			// wait
-		}
 	}
-		// docommand requests license from license manager obj
-		// if license is unavailable, wait until available
-		// pass the string from fgets to docommand
-		// docommand will execl the specified command
-		// parent runsim process checks if any children have finished
-			// and returnlicense when that happens
-		// when eof of stdin is encountered, wait for all 
-			// remaining children to finish before exiting
 
-	// fork and exec a child
-	// have the child attach to and read shared mem
+	// at EOF, wait for all children to finish
+	int status = 0;
+	while (*shm < narg) wait(&status);
+	return(0);
 
 	// implement signal handling to terminate after a specified num of secs
 		// test by sending child into infinite loop
@@ -129,18 +121,14 @@ int main(int argc, char* argv[]) {
 }
 
 void docommand(char* cline) {
+	// request license
+	getlicense();
+
 	// get command from string
 	cline[strcspn(cline, "\n")] = 0;  // remove trailing newline char
 	char* [] argv = tokenizestr(cline);
 	// exec the specified command
 	execvp(argv[0], argv);
-
-	// fork a child (grandchild of the og) that calls makeargv on cline
-	// and calls execvp on the resulting arg array
-
-	// wait for this child, then return the license to the license obj
-
-	// exit
 }
 
 char* [] tokenizestr(char* str) {

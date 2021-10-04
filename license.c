@@ -1,12 +1,12 @@
 // Author: Lexi Anderson
 // CS 4760
-// Last modified: Sept 29, 2021
+// Last modified: Oct 4, 2021
 // license.c
 
 #include <stdlib.h>
 #include "config.h"
 
-int nlicenses = 0; // initial value set to 0
+int nlicenses = 0; // number of available licenses
 
 // Getlicense function
 // Blocks until a license is available
@@ -29,7 +29,7 @@ int returnlicense() {
 // Performs initialization of the license obj
 // Returns 0 upon success
 int initlicense() {
-	// do smtg
+	// do smtg???
 
 	return(0);
 }
