@@ -66,12 +66,40 @@ int main(int argc, char* argv[]) {
 
 	char inputBuffer[MAX_CANON];
 	// read in one line at a time until EOF
-	while (fgets(inputBuffer, MAX_CANON, stdin)) {
+	while (fgets(inputBuffer, MAX_CANON, stdin) != NULL) {
 		// request a license
+		getlicense();
+		
 		// which license functions do I need to call?
 		// initlicense? getlicense? removelicenses?
+
+		// fork child process that calls docommand
+		pid_t pid, w;
+		int status;
+		switch (pid) {
+			case -1:  // error
+				perror("runsim: Error: fork");
+				exit(1);
+			case 0:  // child
+				docommand(inputBuffer);
+				break;
+			default:  // parent
+				// check if any children have finished execution
+				w = waitpid(pid, &status, WNOHANG);
+				if (w == -1) {  // error
+					perror("runsim: Error: waitpid");
+					exit(1);
+				} else if (w > 0) {  // success
+					returnlicense();
+				}
+				break;
+		}
+
+		// at end, wait for all children to finish
+		if (nlicenses < narg) {
+			// wait
+		}
 	}
-		// fork a child that calls docommand
 		// docommand requests license from license manager obj
 		// if license is unavailable, wait until available
 		// pass the string from fgets to docommand
@@ -101,12 +129,43 @@ int main(int argc, char* argv[]) {
 }
 
 void docommand(char* cline) {
+	// get command from string
+	cline[strcspn(cline, "\n")] = 0;  // remove trailing newline char
+	char* [] argv = tokenizestr(cline);
+	// exec the specified command
+	execvp(argv[0], argv);
+
 	// fork a child (grandchild of the og) that calls makeargv on cline
 	// and calls execvp on the resulting arg array
 
 	// wait for this child, then return the license to the license obj
 
 	// exit
+}
+
+char* [] tokenizestr(char* str) {
+	int maxSize = strlen(str);
+	char* tokenarr[maxSize];
+	int i = 0;
+	const char delims[] = {" "};
+	char* token = strtok(str, delims);
+	while (token != NULL) {
+		tokenarr[i++] = token;
+		token = strtok(str, delims);
+	}
+	// arr terminates with null
+	tokenarr[i++] = NULL;
+
+	// resize array if needed
+	if (i < maxSize) {
+		char* tokens[i];
+		for (int k = 0; k < i; k++) {
+			tokens[k] = tokenarr[i];
+		}
+		return tokens;
+	}
+
+	return tokenarr;
 }
 
 //
