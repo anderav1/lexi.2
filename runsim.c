@@ -60,16 +60,17 @@ int main(int argc, char* argv[]) {
 /*TEST*/puts("Shared memory attached successfully");
 
 	*shm = nlicenses;
-	printf("The value of nlicenses stored in shared mem is %d\n", *shm);
+/*TEST*/printf("The value of nlicenses stored in shared mem is %d\n", *shm);
 
-	/* operate on the shared mem */
+	/* main loop */
 
-	// read in command line args
-	// validate args; output usage msg if invalid arg
-
-	// run loop until we reach eof in stdin
-		// use fgets to read a string from stdin
-		// request a license from license obj
+	char inputBuffer[MAX_CANON];
+	// read in one line at a time until EOF
+	while (fgets(inputBuffer, MAX_CANON, stdin)) {
+		// request a license
+		// which license functions do I need to call?
+		// initlicense? getlicense? removelicenses?
+	}
 		// fork a child that calls docommand
 		// docommand requests license from license manager obj
 		// if license is unavailable, wait until available

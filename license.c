@@ -10,20 +10,24 @@ int nlicenses = 0; // initial value set to 0
 
 // Getlicense function
 // Blocks until a license is available
+// Returns 0 for success
 int getlicense() {
-	while (nlicenses == 0);
+	while (nlicenses == 0);  // wait for license to become available
+	removelicenses(1);  // decrement nlicenses
 	return(0);
 }
 
 // Returnlicense function
 // Increments the number of available licenses
+// Returns 0 for success
 int returnlicense() {
-	nlicenses++;
+	addtolicenses(1);
 	return(0);
 }
 
 // Initlicense function
-// Performs any needed initialization of the license obj
+// Performs initialization of the license obj
+// Returns 0 upon success
 int initlicense() {
 	// do smtg
 
