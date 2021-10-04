@@ -9,7 +9,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/shm.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include "config.h"
 
@@ -18,6 +20,9 @@
 #define SHMSZ sizeof(int)  // size of shared memory segment
 
 extern int nlicenses;
+
+char** tokenizestr(char* str);
+void docommand(char* cline);
 
 // deallocate shared memory
 void deallocshm(int shmid) {
@@ -68,6 +73,7 @@ int main(int argc, char* argv[]) {
 
 	/* main loop */
 
+	int status = 0;
 	char inputBuffer[MAX_CANON];
 	// read in one line at a time until EOF
 	while (fgets(inputBuffer, MAX_CANON, stdin) != NULL) {
@@ -79,6 +85,7 @@ int main(int argc, char* argv[]) {
 
 		// fork child process that calls docommand
 		pid_t pid, w;
+		pid = fork();
 		switch (pid) {
 			case -1:  // error
 				perror("runsim: Error: fork");
@@ -100,7 +107,6 @@ int main(int argc, char* argv[]) {
 	}
 
 	// at EOF, wait for all children to finish
-	int status = 0;
 	while (*shm < narg) wait(&status);
 	return(0);
 
@@ -120,20 +126,9 @@ int main(int argc, char* argv[]) {
 	}
 }
 
-void docommand(char* cline) {
-	// request license
-	getlicense();
-
-	// get command from string
-	cline[strcspn(cline, "\n")] = 0;  // remove trailing newline char
-	char* [] argv = tokenizestr(cline);
-	// exec the specified command
-	execvp(argv[0], argv);
-}
-
-char* [] tokenizestr(char* str) {
+char** tokenizestr(char* str) {
 	int maxSize = strlen(str);
-	char* tokenarr[maxSize];
+	char** tokenarr = (char**)malloc(sizeof(char*)*maxSize);
 	int i = 0;
 	const char delims[] = {" "};
 	char* token = strtok(str, delims);
@@ -146,15 +141,29 @@ char* [] tokenizestr(char* str) {
 
 	// resize array if needed
 	if (i < maxSize) {
-		char* tokens[i];
+		char** tokens = (char**)malloc(sizeof(char*)*i);
 		for (int k = 0; k < i; k++) {
 			tokens[k] = tokenarr[i];
 		}
+		free(tokenarr);
 		return tokens;
 	}
 
 	return tokenarr;
 }
+
+void docommand(char* cline) {
+	// request license
+	getlicense();
+
+	// get command from string
+	//char** argv[strlen(cline)];
+	char** argv = tokenizestr(cline);
+	// exec the specified command
+	execvp(argv[0], argv);
+	free(argv);
+}
+
 
 //
 // bakery algorithm
