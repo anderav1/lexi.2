@@ -66,22 +66,18 @@ int main(int argc, char* argv[]) {
 	}
 
 	*shm = nlicenses;
-/*TEST*/printf("runsim: The value of nlicenses stored in shared mem is %d\n", *shm);
 
 	/* main loop */
 
 	int status = 0;
+	pid_t pid, w;
 	char inputBuffer[MAX_CANON];
 	// read in one line at a time until EOF
 	while (fgets(inputBuffer, MAX_CANON, stdin) != NULL) {
 		// request a license
 		getlicense();
-		
-		// which license functions do I need to call?
-		// initlicense? getlicense? removelicenses?
 
 		// fork child process that calls docommand
-		pid_t pid, w;
 		pid = fork();
 		switch (pid) {
 			case -1:  // error
@@ -89,25 +85,25 @@ int main(int argc, char* argv[]) {
 				exit(1);
 			case 0:  // child
 				docommand(inputBuffer);
-				break;
+				exit(0);
 			default:  // parent
-				puts("runsim: parent process running\n");
 				// check if any children have finished execution
-				w = waitpid(pid, &status, WNOHANG);
+				while ((w = waitpid(pid, &status, WNOHANG)) > 0) {
+					if (w > 0) returnlicense();
+				}
 				if (w == -1) {  // error
 					perror("runsim: Error: waitpid");
 					exit(1);
-				} else {  // success
-					returnlicense();
 				}
-				//break;
+				returnlicense();
+				break;
 		}
 	}
 
 	// at EOF, wait for all children to finish
-	while (*shm < narg) wait(&status);
-	puts("runsim: All children have finished execution\n");
-	return(0);
+	if (pid > 0) {
+		wait(&status);
+	}
 
 	// implement signal handling to terminate after a specified num of secs
 		// test by sending child into infinite loop
@@ -121,6 +117,8 @@ int main(int argc, char* argv[]) {
 		perror("runsim: Error: shmdt");
 		exit(1);
 	}
+
+	return(0);
 }
 
 char** tokenizestr(char* str) {
@@ -130,7 +128,6 @@ char** tokenizestr(char* str) {
 	const char delims[] = {" "};
 	char* token = strtok(str, delims);
 	while (token != NULL) {
-		printf("tokenizestr: token is %s\n", token);
 		tokenarr[i++] = token;
 		token = strtok(NULL, delims);
 	}
@@ -149,7 +146,6 @@ void docommand(char* cline) {
 
 	// exec the specified command
 	execvp(argv[0], argv);
-	puts("runsim: command: Command successfully executed");
 	free(argv);
 }
 

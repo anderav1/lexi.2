@@ -16,7 +16,7 @@ int nlicenses = 0; // number of available licenses
 int getlicense() {
 	while (nlicenses == 0);  // wait for license to become available
 	removelicenses(1);  // decrement nlicenses
-	printf("License taken. %d now available\n", nlicenses);
+//	printf("License taken. %d now available\n", nlicenses);
 	return(0);
 }
 
@@ -41,26 +41,26 @@ int initlicense() {
 	fclose(fp);
 */
 	// do smtg???
-	printf("License obj initialized. %d available\n", nlicenses);
+//	printf("License obj initialized. %d available\n", nlicenses);
 	return(0);
 }
 
 // Addtolicenses function
 // Adds n licenses to the number available
 void addtolicenses(int n) {
-	printf("%d licenses available before, ", nlicenses);
+//	printf("%d licenses available before, ", nlicenses);
 	nlicenses += n;
-	printf("%d licenses returned, ", n);
-	printf("%d available now\n", nlicenses);
+//	printf("%d licenses returned, ", n);
+//	printf("%d available now\n", nlicenses);
 }
 
 // Removelicenses function
 // Decrements the number of licenses by n
 void removelicenses(int n) {
-	printf("%d licenses available before, ", nlicenses);
+//	printf("%d licenses available before, ", nlicenses);
 	nlicenses -= n;
-	printf("%d licenses removed, ", n);
-	printf("%d available now\n", nlicenses);
+//	printf("%d licenses removed, ", n);
+//	printf("%d available now\n", nlicenses);
 }
 
 // Logmsg function
@@ -68,7 +68,6 @@ void removelicenses(int n) {
 // Log file treated as critical resource
 void logmsg(const char* msg) {
 	char* filename = "logfile";
-	puts("Attempting to log msg to logfile");
 
 	// open file
 	FILE* fp;
@@ -78,15 +77,12 @@ void logmsg(const char* msg) {
 	}
 
 	// limit file access to one process
-	while (flock(fileno(fp), LOCK_EX) != 0) puts("waiting for file"); // wait for file to be available
-	puts("Logfile now available");
+	while (flock(fileno(fp), LOCK_EX) != 0); // wait for file to be available
 
 	// append msg to file
 	fprintf(fp, "%s", msg);
 
 	// remove lock
-	if(flock(fileno(fp), LOCK_UN) == 0) {
-/*TEST*/	puts("Logfile unlocked");
-	}
+	flock(fileno(fp), LOCK_UN);
 	fclose(fp);
 }

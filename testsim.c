@@ -16,8 +16,6 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
-	puts("testsim: Starting testsim");
-
 	// take in two command line args -- sleep time, repeat factor
 	int sleeptime = atoi(argv[1]);
 	int repeat = atoi(argv[2]);
@@ -34,9 +32,8 @@ int main(int argc, char* argv[]) {
 		pid_t pid = getpid();  // get pid
 
 		char msgstr[400];
-		sprintf(msgstr, "%s\t %ld\t %d of %d\n", time, (intmax_t)pid, i + 1, repeat);
+		sprintf(msgstr, "%.24s\t %ld\t %d of %d\n", time, (intmax_t)pid, i + 1, repeat);
 
-		printf("testsim: %s", msgstr);
 		logmsg(msgstr);
 	}
 
