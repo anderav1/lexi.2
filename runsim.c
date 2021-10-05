@@ -7,6 +7,7 @@
 	// n -- number of licenses
 
 
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,15 +22,23 @@
 
 extern int nlicenses;
 
+int shmid;
+
 char** tokenizestr(char* str);
 void docommand(char* cline);
 
 // deallocate shared memory
-void deallocshm(int shmid) {
-	if (shmctl(shmid, IPC_RMID, NULL) == -1) {
+void deallocshm(int id) {
+	if (shmctl(id, IPC_RMID, NULL) == -1) {
 		perror("runsim: Error: shmctl");
 		exit(1);
 	}
+}
+
+void sighandler(int signum) {
+	printf("Received signal %d, execution aborted.\n", signum);
+	deallocshm(shmid);
+	abort();
 }
 
 
@@ -49,7 +58,6 @@ int main(int argc, char* argv[]) {
 	nlicenses = narg;
 
 	/* allocate shared memory */
-	int shmid;
 	int* shm;  // ptr to shared memory segment
 
 	// create shared memory segment
@@ -93,7 +101,7 @@ int main(int argc, char* argv[]) {
 				}
 				if (w == -1) {  // error
 					perror("runsim: Error: waitpid");
-					exit(1);
+					signal(SIGINT, sighandler);
 				}
 				returnlicense();
 				break;
@@ -148,29 +156,3 @@ void docommand(char* cline) {
 	execvp(argv[0], argv);
 	free(argv);
 }
-
-
-//
-// bakery algorithm
-/* bool choosing[n]; // shm
-int number[n];  // shm, contains turn numbers
-
-void process_i(const int i) {
-	do {
-		choosing[i] = true;
-		number[i] = 1 + max(number);
-		choosing[i] = false;
-
-		for (int j = 0; j < n; j++) {
-			while (choosing[j]);
-			while ((number[j]) && (number[j], j) < (number[i], i));
-		}
-
-		critical_section();
-
-		number[i] = 0;
-
-		remainder_section();
-	} while (1);
-}*/
-
