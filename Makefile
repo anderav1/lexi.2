@@ -1,6 +1,6 @@
 # Author: Lexi Anderson
 # CS 4760
-# Last modified: Sept 29, 2021
+# Last modified: Oct 5, 2021
 # Makefile (Project 2)
 
 CC = gcc
@@ -22,4 +22,4 @@ $(OBJ): %.o: %.c $(DEPS)
 # clean up generated files
 .PHONY: clean
 clean:
-	rm -f $(TAR) *.o
+	rm -f $(TAR) *.o logfile
