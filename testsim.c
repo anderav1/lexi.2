@@ -3,8 +3,12 @@
 // Last modified: Oct 4, 2021
 // testsim.c -- application program
 
+#include <inttypes.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
+#include <unistd.h>
+#include "config.h"
 
 int main(int argc, char* argv[]) {
 	if (argc != 3) {
@@ -12,9 +16,11 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
+	puts("testsim: Starting testsim");
+
 	// take in two command line args -- sleep time, repeat factor
-	int sleeptime = argv[1];
-	int repeat = argv[2];
+	int sleeptime = atoi(argv[1]);
+	int repeat = atoi(argv[2]);
 
 	// main loop
 	for (int i = 0; i < repeat; i++) {
@@ -23,13 +29,14 @@ int main(int argc, char* argv[]) {
 		// get time
 		time_t now;
 		time(&now);
-		char* time = ctime(now); // current time as string
+		char* time = ctime(&now); // current time as string
 
 		pid_t pid = getpid();  // get pid
 
 		char msgstr[400];
 		sprintf(msgstr, "%s\t %ld\t %d of %d\n", time, (intmax_t)pid, i + 1, repeat);
 
+		printf("testsim: %s", msgstr);
 		logmsg(msgstr);
 	}
 

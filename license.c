@@ -32,6 +32,14 @@ int returnlicense() {
 // Performs initialization of the license obj
 // Returns 0 upon success
 int initlicense() {
+	// create logfile
+	/*FILE* fp;
+	fp = fopen("logfile", "w");  // create file
+	while (flock(fileno(fp), LOCK_EX) != 0);  // lock file to other processes
+	fputs("Time\t PID\t Iteration# of NumOfIterations", fp);
+	flock(fileno(fp), LOCK_UN);  // unlock file
+	fclose(fp);
+*/
 	// do smtg???
 	printf("License obj initialized. %d available\n", nlicenses);
 	return(0);
@@ -60,7 +68,7 @@ void removelicenses(int n) {
 // Log file treated as critical resource
 void logmsg(const char* msg) {
 	char* filename = "logfile";
-	// check if file is available
+	puts("Attempting to log msg to logfile");
 
 	// open file
 	FILE* fp;
@@ -68,11 +76,15 @@ void logmsg(const char* msg) {
 	if (fp == NULL) {
 		return;
 	}
-	while (flock(fileno(fp), LOCK_EX) == -1); // wait for file to be available
+
+	// limit file access to one process
+	while (flock(fileno(fp), LOCK_EX) != 0) puts("waiting for file"); // wait for file to be available
 	puts("Logfile now available");
+
 	// append msg to file
 	fprintf(fp, "%s", msg);
 
+	// remove lock
 	if(flock(fileno(fp), LOCK_UN) == 0) {
 /*TEST*/	puts("Logfile unlocked");
 	}

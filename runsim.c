@@ -65,8 +65,6 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
-/*TEST*/puts("runsim: Shared memory attached successfully");
-
 	*shm = nlicenses;
 /*TEST*/printf("runsim: The value of nlicenses stored in shared mem is %d\n", *shm);
 
@@ -90,7 +88,6 @@ int main(int argc, char* argv[]) {
 				perror("runsim: Error: fork");
 				exit(1);
 			case 0:  // child
-				puts("runsim: child process executing\n");
 				docommand(inputBuffer);
 				break;
 			default:  // parent
@@ -100,10 +97,10 @@ int main(int argc, char* argv[]) {
 				if (w == -1) {  // error
 					perror("runsim: Error: waitpid");
 					exit(1);
-				} else if (w > 0) {  // success
+				} else {  // success
 					returnlicense();
 				}
-				break;
+				//break;
 		}
 	}
 
@@ -117,8 +114,6 @@ int main(int argc, char* argv[]) {
 
 	// fork and exec multiple children until the specific limits
 
-	// each child process runs execl testsim
-
 	deallocshm(shmid);
 
 	/* detach shared mem seg from program space */
@@ -129,27 +124,18 @@ int main(int argc, char* argv[]) {
 }
 
 char** tokenizestr(char* str) {
-	int maxSize = strlen(str);
-	char** tokenarr = (char**)malloc(sizeof(char*)*maxSize);
+	int sz = 3;
+	char** tokenarr = (char**)malloc(sizeof(char*)*sz);
 	int i = 0;
 	const char delims[] = {" "};
 	char* token = strtok(str, delims);
 	while (token != NULL) {
+		printf("tokenizestr: token is %s\n", token);
 		tokenarr[i++] = token;
-		token = strtok(str, delims);
+		token = strtok(NULL, delims);
 	}
 	// arr terminates with null
-	tokenarr[i++] = NULL;
-
-	// resize array if needed
-	if (i < maxSize) {
-		char** tokens = (char**)malloc(sizeof(char*)*i);
-		for (int k = 0; k < i; k++) {
-			tokens[k] = tokenarr[i];
-		}
-		free(tokenarr);
-		return tokens;
-	}
+	tokenarr[i] = NULL;
 
 	return tokenarr;
 }
@@ -159,10 +145,11 @@ void docommand(char* cline) {
 	getlicense();
 
 	// get command from string
-	//char** argv[strlen(cline)];
 	char** argv = tokenizestr(cline);
+
 	// exec the specified command
 	execvp(argv[0], argv);
+	puts("runsim: command: Command successfully executed");
 	free(argv);
 }
 
